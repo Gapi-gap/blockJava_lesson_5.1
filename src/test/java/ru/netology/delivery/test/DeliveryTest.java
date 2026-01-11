@@ -1,6 +1,7 @@
 package ru.netology.delivery.test;
 
 import com.codeborne.selenide.Selectors;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ class DeliveryTest {
         $("[data-test-id='agreement']").click();
         $(Selectors.byText("Запланировать")).click();
 
+        $(Selectors.withText("Успешно!")).shouldBe(visible,Duration.ofSeconds(15));
         $("[data-test-id='success-notification'] .notification__content")
                 .shouldHave(exactText("Встреча успешно запланирована на " + firstMeetingDate))
                 .shouldBe(visible);
@@ -44,8 +46,14 @@ class DeliveryTest {
         $("[data-test-id='date'] input").setValue(secondMeetingDate);
         $(Selectors.byText("Запланировать")).click();
 
-        // $("[data-test-id='success-notification'] .notification__content")
-        //                .shouldHave(text("У вас уже запланирована встреча на другую дату. Перепланировать?"))
-        //                .shouldBe(visible);
+        //$(Selectors.withText("Необходимо подтверждение")).shouldBe(visible,Duration.ofSeconds(15));
+        $("[data-test-id='replan-notification'] .notification__content")
+                .shouldHave(text("У вас уже запланирована встреча на другую дату. Перепланировать?"))
+                .shouldBe(visible);
+
+        $("[data-test-id='replan-notification'] button").click();
+        $("[data-test-id='success-notification'] .notification__content")
+                .shouldHave(exactText("Встреча успешно запланирована на " + secondMeetingDate))
+                .shouldBe(visible);
     }
 }
